@@ -1,0 +1,80 @@
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="range.css">
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous">
+    </script>
+    <script src="semantic/dist/semantic.min.js"></script>
+    <script src="range.js"></script>
+</head>
+<body>
+<div class="ui inverted vertical masthead center aligned segment">
+
+    <div class="ui text container middlewidth">
+        <h1 class="ui inverted header">
+            How are you feeling today?
+        </h1>
+        <div class="sameline">
+            <h2> I am feeling</h2>
+        </div>
+            <div class="sameline">
+                <div class="ui fluid selection dropdown">
+                    <input type="hidden" name="reaction">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Select Reaction</div>
+                    <div class="menu">
+                        <div class="item" data-value="Sad">
+                            Sad
+                        </div>
+                        <div class="item" data-value="Happy">
+                            Happy
+                        </div>
+                        <div class="item" data-value="Terrified">
+                            Terrified
+                        </div>
+                        <div class="item" data-value="Excited">
+                            Excited
+                        </div>
+                        <div class="item" data-value="Gloomy">
+                            Gloomy
+                        </div>
+                        <div class="item" data-value="Bored">
+                            Bored
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div class="ui inverted segment">
+            <p>
+            <div class="ui inverted grey range" id="rating"></div>
+            </p>
+        </div>
+        <br />
+        <div class="ui huge primary button sameline"> Submit </div>
+         Or
+        <div class="ui big pink button sameline"> Skip this step <i class="right arrow icon"></i></div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#rating').range({
+            min: 0,
+            max: 10,
+            start: 5,
+            step: 1,
+            onChange: function(val) {}
+        });
+    });
+
+    $('.ui.dropdown')
+        .dropdown()
+    ;
+</script>
+</body>
+</html>
