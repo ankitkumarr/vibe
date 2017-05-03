@@ -50,5 +50,5 @@ app.get('/semantic/dist/themes/default/assets/fonts/icons.ttf', function (req, r
 })
 
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
+  console.log('Vibe Started')
 })
