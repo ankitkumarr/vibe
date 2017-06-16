@@ -8,10 +8,16 @@
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
       crossorigin="anonymous">
     </script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     <script src="semantic/dist/semantic.min.js"></script>
     <script src="range.js"></script>
 </head>
 <body>
+    <script>
+        function openMap() {
+            window.location.assign('map.html');
+        }
+    </script>
 <div class="ui inverted vertical masthead center aligned segment">
 
     <div class="ui text container middlewidth">
@@ -54,27 +60,79 @@
             </p>
         </div>
         <br />
-        <div class="ui huge primary button sameline"> Submit </div>
-         Or
-        <div class="ui big pink button sameline"> Skip this step <i class="right arrow icon"></i></div>
+        <center><div class="g-recaptcha" data-sitekey="6LcCrCAUAAAAAAwyIah9BXNzA8MooNpgU1aqOc9F" data-theme	="dark" data-callback="captchaCallback"></div></center>
+        <br />
+        <button onclick="makeSubmitRequest()" class="ui huge primary button sameline"> Submit </button>
+         or
+        <button onclick="openMap();" class="ui big pink button sameline"> Skip this step <i class="right arrow icon"></i></button>
     </div>
+    <br \>
+    <br \>
+    <div id="locateError"></div>
 
 </div>
 
 <script>
+    var rangeValue;
+    var captchaResponse;
+    var hasLocation = false;
+    var latitude;
+    var longitude;
     $(document).ready(function() {
         $('#rating').range({
             min: 0,
             max: 10,
             start: 5,
             step: 1,
-            onChange: function(val) {}
+            onChange: function(val) {
+                rangeValue = val;
+            }
         });
+        window.captchaCallback = function captchaCallback(response) {
+            captchaResponse = response;
+        };
     });
+    var makeSubmitRequest = function makeSubmitRequest() {
+        if (!hasLocation) {
+            alert('We couldn\'t get your location. Please allow location sharing.');
+        }
+        else {
+            var req = new XMLHttpRequest();
+            req.open('POST', '/vibeSubmit', true);
+            req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            req.onload = function() {
+                if(this.responseText === 'error') {
+                    alert('Error in CAPTCHA');
+                }
+                else {
+                    openMap();
+                }
+            };
+            req.send('feeling=' + $('.ui.dropdown').dropdown('get value') + '&' + 'range=' + rangeValue + '&' + 'latitude=' + latitude + '&' + 'longitude=' + longitude + '&' + 'captcha=' + captchaResponse);
+        }
+            
+    };
 
     $('.ui.dropdown')
-        .dropdown()
-    ;
+        .dropdown();
+    $('.ui.dropdown').dropdown('set selected', 'Happy');
+    var problem = document.getElementById("locateError");
+     if (!navigator.geolocation){
+         problem.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+     }
+    else {
+            function error() {
+                problem.innerHTML = "Unable to retrieve your location. Please allow your location to be retrieved.";
+            }
+            function success(position) {
+                latitude  = position.coords.latitude;
+                longitude = position.coords.longitude;
+                hasLocation = true;
+                problem.innerHTML = '<p>Latitude is ' + latitude + '° <br>Longitude is ' + longitude + '°</p>';
+            }
+          navigator.geolocation.getCurrentPosition(success, error);
+    }
+      
 </script>
 </body>
 </html>

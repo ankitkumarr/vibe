@@ -13,6 +13,62 @@
             var mymap = L.map('mapid').setView([51.505, -0.09], 13);
             L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYWt1bWFyMyIsImEiOiJjajFibDFxdWUwOXBiMnFtb3FoNGNzMzh3In0.DT-PBTJLGM2XNFH9lLHrOg').addTo(mymap);
             mymap.setView(new L.LatLng(40.737, -73.923), 8);
+//            var circle = L.circle([51.508, -0.11], {
+//                color: 'red',
+//                fillColor: '#f03',
+//                fillOpacity: 0.5,
+//                radius: 1000
+//            }).addTo(mymap);
+//            var circle = L.circle([51.508, -0.12], {
+//                color: 'red',
+//                fillColor: '#f03',
+//                fillOpacity: 0.5,
+//                radius: 1000
+//            }).addTo(mymap);
+//            var circle = L.circle([51.508, -0.12], {
+//                color: 'red',
+//                fillColor: '#f03',
+//                fillOpacity: 0.5,
+//                radius: 1000
+//            }).addTo(mymap);
+//            var circle = L.circle([51.508, -0.12], {
+//                color: 'red',
+//                fillColor: '#f03',
+//                fillOpacity: 0.5,
+//                radius: 1000
+//            }).addTo(mymap);
+//            var circle = L.circle([51.508, -0.12], {
+//                color: 'red',
+//                fillColor: '#f03',
+//                fillOpacity: 0.5,
+//                radius: 1000
+//            }).addTo(mymap);
+            var request = new XMLHttpRequest();
+            if (!request) {
+                alert('Error making a request');
+            }
+            request.onreadystatechange = populateMap;
+            request.open('GET', '/mapPoints');
+            request.send();
+            
+            function populateMap() {
+                 if (request.readyState === XMLHttpRequest.DONE) {
+                     if (request.status === 200) {
+                         data = JSON.parse(request.responseText);
+                         data.forEach(function(item) {
+                             var circle = L.circle([item.latitude, item.longitude], {
+                                 color: item.color,
+                                 fillOpacity: item.opacity,
+                                 radius: 500
+                             }).addTo(mymap).bindPopup(item.feeling + ' : ' + item.opacity*10 + '/10');
+                         })
+                     } else {
+                         alert('There was a problem with the request.');
+                     }
+                 }
+            }
+            
+            var popup = L.popup();
         </script>
     </body>
 

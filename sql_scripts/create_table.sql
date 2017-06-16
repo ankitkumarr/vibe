@@ -1,0 +1,1 @@
+Create table user_information (latitude FLOAT, longitude FLOAT, rangevalue INT, feeling VARCHAR(20), timestamp TIMESTAMP DEFAULT NOW());
