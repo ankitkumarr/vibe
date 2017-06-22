@@ -58,8 +58,9 @@
                          data.forEach(function(item) {
                              var circle = L.circle([item.latitude, item.longitude], {
                                  color: item.color,
+                                 stroke: false,
                                  fillOpacity: item.opacity,
-                                 radius: 500
+                                 radius: 3000
                              }).addTo(mymap).bindPopup(item.feeling + ' : ' + item.opacity*10 + '/10');
                          })
                      } else {

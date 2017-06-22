@@ -23,7 +23,7 @@ var mockMySql = function () {
         }
          connection.query('INSERT into user_information SET ?', datadump, function (err, res) {
             if (err) throw err;
-            console.log('Inserted');
+            console.log('Inserted' + i);
         });
     }
 }

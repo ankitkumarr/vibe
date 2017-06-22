@@ -4,14 +4,16 @@ var mysql = require('mysql');
 var qs = require('querystring');
 var request = require('request');
 
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'vibe',
-  password : 'viber12',
-  database : 'vibe_info'
-});
-
-connection.connect();
+var connection = null;
+var CONNECT = () => {
+    connection = mysql.createConnection({
+      host     : 'localhost',
+      user     : 'vibe',
+      password : 'viber12',
+      database : 'vibe_info'
+    });
+};
+// connection.connect();
 
 var COLOR_MAP = {
     "Happy" : "yellow",
@@ -27,20 +29,27 @@ app.get('/', function (req, res) {
 })
 
 app.get('/mapPoints', function (req, res) {
-    connection.query('SELECT * FROM user_information', function(err, rows) {
+    CONNECT();
+    connection.connect(function (err) {
         if (err) throw err;
-        listToSend = [ ]
-        for (var i = 0; i < rows.length; i++) {
-            content = {}
-            content['color'] = COLOR_MAP[rows[i].feeling];
-            content['feeling'] = rows[i].feeling;
-            content['opacity'] = (rows[i].rangevalue)/10;
-            content['latitude'] = rows[i].latitude;
-            content['longitude'] = rows[i].longitude;
-            listToSend.push(content);
-        };
-        res.send(listToSend);
-    })
+        connection.query('SELECT * FROM user_information', function(err, rows) {
+            if (err) throw err;
+            listToSend = [ ];
+            for (var i = 0; i < rows.length; i++) {
+                content = {}
+                content['color'] = COLOR_MAP[rows[i].feeling];
+                content['feeling'] = rows[i].feeling;
+                content['opacity'] = (rows[i].rangevalue)/10;
+                content['latitude'] = rows[i].latitude;
+                content['longitude'] = rows[i].longitude;
+                listToSend.push(content);
+            };
+            res.send(listToSend);
+            connection.end();
+        });
+
+    });
+    
 })
 
 app.post('/vibeSubmit', function(req, res) {
@@ -76,33 +85,23 @@ app.post('/vibeSubmit', function(req, res) {
             'longitude' : qs.parse(chunk).longitude,
             'rangevalue' : qs.parse(chunk).range,
             'feeling' : qs.parse(chunk).feeling
-        }
-        connection.query('INSERT into user_information SET ?', datadump, function (err, res) {
+        };
+        CONNECT();
+        connection.connect(function(err) {
             if (err) throw err;
-            console.log('Inserted' + datadump);
-        });
-        console.log('end');
-        res.send('ok');
-       // res.sendFile('index.html', {"root": __dirname});
+            connection.query('INSERT into user_information SET ?', datadump, function (err, r) {
+                if (err) throw err;
+                console.log('Inserted' + datadump);
+                console.log('end');
+                res.send('ok');
+                connection.end();
+            });
+        })
+        
     })
 })
 
-var mockMySql = function () {
-    var i = 0;
-    var MOCK_FEELING = ['Happy', 'Sad', 'Gloomy', 'Terrified', 'Excited', 'Bored'];
-    for (i = 0; i < 1000; i++) {
-         var datadump = {
-            'latitude' : Math.random() * 180 - 90,
-            'longitude' : Math.random() * 360 - 180,
-            'rangevalue' : Math.floor(Math.random()*10),
-            'feeling' : MOCK_FEELING[Math.floor(Math.random()*5)]
-        }
-         connection.query('INSERT into user_information SET ?', datadump, function (err, res) {
-            if (err) throw err;
-            console.log('Inserted');
-        });
-    }
-}
+
 
 // mockMySql();
 app.get('/index.html', function (req, res) {
